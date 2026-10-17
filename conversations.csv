@@ -1,19 +1,51 @@
-conv_id,vertical,contact_reason,failure_mode,outcome,ai_note
-C-41027,Payments,Card dispute,Knowledge gap,Escalated,Quoted the old chargeback rule; customer pointed to the new notice.
-C-41033,Payments,Charged twice,Classification error,Re-contact,Sent to pending-payment flow; told the customer to wait for a charge already settled.
-C-41041,Subscriptions,Double charge,Logic fault,Re-contact,"Confirmed the double charge, then closed the conversation without a refund."
-C-41052,Cards,Lost card,Success,Resolved,Froze the card and ordered a replacement within the conversation.
-C-41058,Payments,Partial chargeback,Knowledge gap,Escalated,Could not explain why only part of the payment was returned.
-C-41066,Payments,Charged twice,Classification error,Escalated,Classified as a pending payment; customer asked for a person after two replies.
-C-41071,Account access,Locked account,Knowledge gap,Escalated,No article for unlocking after a phone number change.
-C-41079,Subscriptions,Double charge,Logic fault,Escalated,"Promised a refund ""within 24 hours""; no refund action was created."
-C-41084,Cards,Card declined,Success,Resolved,"Found the spending limit, raised it with consent, and confirmed."
-C-41090,Payments,Wrong amount,Classification error,Re-contact,Treated as pending; did not open a dispute.
-C-41097,Payments,Card dispute,Knowledge gap,Escalated,Promised a full return that the new rule no longer allows.
-C-41103,Cards,Lost card,Success,Resolved,Card frozen in under a minute; replacement on its way.
-C-41110,Subscriptions,Cancel plan,Knowledge gap,Escalated,No guidance for plans bought through an app store.
-C-41118,Payments,Charged twice,Classification error,Re-contact,Routed to pending payment; customer opened a second conversation.
-C-41125,Account access,Password reset,Success,Resolved,Sent a reset link and confirmed the new login.
-C-41131,Subscriptions,Double charge,Logic fault,Re-contact,Refund step skipped after identity check.
-C-41139,Payments,Partial chargeback,Knowledge gap,Escalated,Quoted last month's policy wording.
-C-41144,Cards,PIN reminder,Success,Resolved,Showed the PIN securely in the app.
+market,conv_id,vertical,contact_reason,failure_mode,outcome,ai_note
+Poland,PL-41027,Payments,Card dispute,Knowledge gap,Escalated,Quoted the old chargeback rule; customer pointed to the new notice.
+Poland,PL-41033,Payments,Charged twice,Classification error,Re-contact,Sent to pending-payment flow; told the customer to wait for a charge already settled.
+Poland,PL-41041,Subscriptions,Double charge,Logic fault,Re-contact,"Confirmed the double charge, then closed the conversation without a refund."
+Poland,PL-41052,Cards,Lost card,Success,Resolved,Froze the card and ordered a replacement within the conversation.
+Poland,PL-41058,Payments,Partial chargeback,Knowledge gap,Escalated,Could not explain why only part of the payment was returned.
+Poland,PL-41066,Payments,Charged twice,Classification error,Escalated,Classified as a pending payment; customer asked for a person after two replies.
+Poland,PL-41071,Account access,Locked account,Knowledge gap,Escalated,No article for unlocking after a phone number change.
+Poland,PL-41079,Subscriptions,Double charge,Logic fault,Escalated,"Promised a refund ""within 24 hours""; no refund action was created."
+Poland,PL-41084,Cards,Card declined,Success,Resolved,"Found the spending limit, raised it with consent, and confirmed."
+Poland,PL-41090,Payments,Wrong amount,Classification error,Re-contact,Treated as pending; did not open a dispute.
+Poland,PL-41097,Payments,Card dispute,Knowledge gap,Escalated,Promised a full return that the new rule no longer allows.
+Poland,PL-41103,Cards,Lost card,Success,Resolved,Card frozen in under a minute; replacement on its way.
+Poland,PL-41110,Subscriptions,Cancel plan,Knowledge gap,Escalated,No guidance for plans bought through an app store.
+Poland,PL-41118,Payments,Charged twice,Classification error,Re-contact,Routed to pending payment; customer opened a second conversation.
+Poland,PL-41125,Account access,Password reset,Success,Resolved,Sent a reset link and confirmed the new login.
+Poland,PL-41131,Subscriptions,Double charge,Logic fault,Re-contact,Refund step skipped after identity check.
+Poland,PL-41139,Payments,Partial chargeback,Knowledge gap,Escalated,Quoted last month's policy wording.
+Poland,PL-41144,Cards,PIN reminder,Success,Resolved,Showed the PIN securely in the app.
+Estonia,EE-41012,Account access,Locked account,Knowledge gap,Escalated,Described the old login screen; customer could not find the recovery link.
+Estonia,EE-41018,Subscriptions,Cancel plan,Classification error,Re-contact,Paused the plan when the customer asked to cancel it.
+Estonia,EE-41025,Cards,Replacement card,Logic fault,Escalated,Asked for the address four times; the address has no postcode.
+Estonia,EE-41031,Payments,Transfer status,Success,Resolved,Answered in Estonian from the localised article; no hand-over needed.
+Estonia,EE-41037,Account access,Password reset,Knowledge gap,Re-contact,Linked to an outdated help page.
+Estonia,EE-41044,Cards,Card declined,Success,Resolved,Explained the merchant block in Estonian and offered an alternative.
+Estonia,EE-41050,Subscriptions,Cancel plan,Classification error,Escalated,Routed to the pause flow twice; customer asked for a person.
+Estonia,EE-41056,Payments,Fee question,Success,Resolved,Quoted the correct fee from the localised fee table.
+Portugal,PT-41008,Payments,Transfer held,Knowledge gap,Escalated,Could not explain the new instant-transfer limit.
+Portugal,PT-41015,Cards,Card blocked,Classification error,Re-contact,Started a lost-card report for a card blocked for security.
+Portugal,PT-41021,Payments,Refund status,Logic fault,Escalated,Status lookup returned nothing for a 75-day-old refund.
+Portugal,PT-41029,Payments,Where is my payment,Success,Resolved,Pointed to the in-review notice and gave the expected time.
+Portugal,PT-41034,Payments,Transfer held,Knowledge gap,Re-contact,"Gave last month's limit, which is no longer correct."
+Portugal,PT-41040,Cards,Card blocked,Classification error,Escalated,Ordered a replacement the customer did not need.
+Portugal,PT-41047,Subscriptions,Plan upgrade,Success,Resolved,Upgraded the plan and confirmed the new price.
+Portugal,PT-41053,Payments,Refund status,Logic fault,Re-contact,Ended the conversation after an empty lookup.
+Germany,DE-41006,Payments,Direct debit return,Knowledge gap,Escalated,Quoted the old return time limit.
+Germany,DE-41013,Payments,Card chargeback,Classification error,Re-contact,Sent the merchant-refund steps for a chargeback request.
+Germany,DE-41019,Account access,Address change,Logic fault,Escalated,Second identity check timed out; address not changed.
+Germany,DE-41026,Payments,Overdraft fee,Success,Resolved,Explained the fee in plain German in two short messages.
+Germany,DE-41032,Payments,Direct debit return,Knowledge gap,Re-contact,Could not say whether the return was still possible.
+Germany,DE-41038,Payments,Merchant refund,Classification error,Escalated,Opened a chargeback instead of guiding a merchant refund.
+Germany,DE-41045,Account access,Address change,Logic fault,Re-contact,Asked for ID twice; customer gave up and came back later.
+Germany,DE-41051,Payments,Overdraft fee,Success,Resolved,Customer confirmed the explanation was clear.
+Spain,ES-41004,Payments,Send to contact,Knowledge gap,Escalated,No article on limits for sending money to contacts.
+Spain,ES-41011,Cards,Second card,Classification error,Re-contact,Started a new card order instead of a second card.
+Spain,ES-41017,Subscriptions,Pause plan,Logic fault,Re-contact,Paused the plan but did not give the next billing date.
+Spain,ES-41024,Cards,Lost card,Success,Resolved,Froze the card and ordered a replacement within the conversation.
+Spain,ES-41030,Payments,Send to contact,Knowledge gap,Escalated,Could not explain why the transfer was declined.
+Spain,ES-41036,Cards,Second card,Classification error,Escalated,Customer had to cancel the wrong order with a person.
+Spain,ES-41043,Subscriptions,Pause plan,Logic fault,Re-contact,Customer came back to ask when billing restarts.
+Spain,ES-41049,Cards,Lost card,Success,Resolved,Card frozen in under a minute; replacement on its way.

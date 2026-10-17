@@ -38,6 +38,14 @@ def signed(v, dp=1):
     return f"{v:+.{dp}f}".replace("-", "−")
 
 
+def stretch(fn, *args, **kwargs):
+    """Full-width element on both newer (width="stretch") and older Streamlit versions."""
+    try:
+        return fn(*args, width="stretch", **kwargs)
+    except Exception:
+        return fn(*args, use_container_width=True, **kwargs)
+
+
 weekly, bridge, lines, chats = load()
 
 markets = sorted(weekly["market"].unique())
@@ -144,7 +152,7 @@ if has_review:
         xaxis=dict(title=None),
         hoverlabel=dict(align="left"),
     )
-    st.plotly_chart(fig, use_container_width=True)
+    stretch(st.plotly_chart, fig)
     st.caption(f"Axis starts at {y_lo}% to show the change.")
 
 # ---------- Where it happened ----------
@@ -164,7 +172,7 @@ with c1:
     tf.update_layout(height=320, margin=dict(l=10, r=10, t=10, b=10), hovermode="x unified",
                      yaxis=dict(ticksuffix="%", gridcolor="rgba(128,128,128,0.15)"),
                      legend=dict(orientation="h", y=-0.2))
-    st.plotly_chart(tf, use_container_width=True)
+    stretch(st.plotly_chart, tf)
     st.caption("Only Poland broke from its trend, so this is local, not a model-wide regression.")
 with c2:
     st.markdown(f"**{'Poland' if has_review else market} by service line, week {prev_w} vs {cur_w}**")
@@ -173,10 +181,10 @@ with c2:
             "vertical": "Service line", "share_w40": "Share wk 40 (%)", "share_w41": "Share wk 41 (%)",
             "rate_w40": "Rate wk 40 (%)", "rate_w41": "Rate wk 41 (%)", "change_pts": "Change (pts)",
         })
-        st.dataframe(
+        stretch(st.dataframe,
             t.style.format({"Rate wk 40 (%)": "{:.1f}", "Rate wk 41 (%)": "{:.1f}", "Change (pts)": "{:+.1f}"})
             .map(lambda v: f"color: {RED if v < 0 else GREEN}; font-weight: 600", subset=["Change (pts)"]),
-            hide_index=True, use_container_width=True,
+            hide_index=True,
         )
         st.caption("Payments and Subscriptions carry the drop; Cards improved.")
     else:
@@ -196,10 +204,10 @@ if has_review:
         "driver": "Driver", "kind": "Type", "finding": "What the AI found", "fix": "Fix",
         "owner": "Owner", "status": "Status",
     })
-    st.dataframe(
+    stretch(st.dataframe,
         view.style.format({"Impact (pts)": "{:+.1f}", "Chats": "{:,.0f}"}, na_rep="—")
         .map(lambda v: f"color: {GREEN if v > 0 else RED}; font-weight: 600", subset=["Impact (pts)"]),
-        hide_index=True, use_container_width=True,
+        hide_index=True,
         column_config={"What the AI found": st.column_config.TextColumn(width="large"),
                        "Fix": st.column_config.TextColumn(width="medium")},
     )
@@ -219,10 +227,10 @@ if has_review:
         mask = cv.apply(lambda r: q.lower() in " ".join(map(str, r.values)).lower(), axis=1)
         cv = cv[mask]
     cv = cv.assign(failure_mode=cv["failure_mode"].map(lambda x: f"{MODE_ICON.get(x, '⚪')} {x}"))
-    st.dataframe(
+    stretch(st.dataframe,
         cv.rename(columns={"conv_id": "Chat", "vertical": "Service line", "contact_reason": "Reason",
                            "failure_mode": "AI label", "outcome": "Outcome", "ai_note": "AI note"}),
-        hide_index=True, use_container_width=True,
+        hide_index=True,
         column_config={"AI note": st.column_config.TextColumn(width="large")},
     )
     st.caption(f"Showing {len(cv)} of {len(chats)} sample chats.")

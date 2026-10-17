@@ -4,6 +4,7 @@ Illustrative demo built by Abel Louis. All markets, conversations and figures ar
 invented sample data; no real company or customer data is used.
 """
 
+import hmac
 import html
 import textwrap
 from pathlib import Path
@@ -13,6 +14,29 @@ import plotly.graph_objects as go
 import streamlit as st
 
 st.set_page_config(page_title="CSAT Copilot", page_icon="📊", layout="wide", initial_sidebar_state="collapsed")
+
+
+def password_ok():
+    """Simple password screen. The password lives in Streamlit's Secrets as APP_PASSWORD, never in this repo."""
+    try:
+        expected = str(st.secrets["APP_PASSWORD"])
+    except Exception:
+        return True  # no password configured yet: the app stays open
+    if st.session_state.get("auth_ok"):
+        return True
+    st.title("CSAT Copilot")
+    st.caption("Illustrative demo with sample data. Enter the password you were given to continue.")
+    entered = st.text_input("Password", type="password", key="pw")
+    if entered:
+        if hmac.compare_digest(entered, expected):
+            st.session_state["auth_ok"] = True
+            st.rerun()
+        st.error("That password is not correct. Please try again.")
+    return False
+
+
+if not password_ok():
+    st.stop()
 
 DATA = Path(__file__).parent
 RED, GREEN, GREY, BLUE = "#D64545", "#2E9E6A", "#9AA3AE", "#2F5BEA"

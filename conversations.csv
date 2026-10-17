@@ -1,0 +1,19 @@
+conv_id,vertical,contact_reason,failure_mode,outcome,ai_note
+C-41027,Payments,Card dispute,Knowledge gap,Escalated,Quoted the old chargeback rule; customer pointed to the new notice.
+C-41033,Payments,Charged twice,Classification error,Re-contact,Sent to pending-payment flow; told the customer to wait for a charge already settled.
+C-41041,Subscriptions,Double charge,Logic fault,Re-contact,"Confirmed the double charge, then closed the chat without a refund."
+C-41052,Cards,Lost card,Success,Resolved,Froze the card and ordered a replacement in the chat.
+C-41058,Payments,Partial chargeback,Knowledge gap,Escalated,Could not explain why only part of the payment was returned.
+C-41066,Payments,Charged twice,Classification error,Escalated,Classified as a pending payment; customer asked for a person after two replies.
+C-41071,Account access,Locked account,Knowledge gap,Escalated,No article for unlocking after a phone number change.
+C-41079,Subscriptions,Double charge,Logic fault,Escalated,"Promised a refund ""within 24 hours""; no refund action was created."
+C-41084,Cards,Card declined,Success,Resolved,"Found the spending limit, raised it with consent, and confirmed."
+C-41090,Payments,Wrong amount,Classification error,Re-contact,Treated as pending; did not open a dispute.
+C-41097,Payments,Card dispute,Knowledge gap,Escalated,Promised a full return that the new rule no longer allows.
+C-41103,Cards,Lost card,Success,Resolved,Card frozen in under a minute; replacement on its way.
+C-41110,Subscriptions,Cancel plan,Knowledge gap,Escalated,No guidance for plans bought through an app store.
+C-41118,Payments,Charged twice,Classification error,Re-contact,Routed to pending payment; customer opened a second chat.
+C-41125,Account access,Password reset,Success,Resolved,Sent a reset link and confirmed the new login.
+C-41131,Subscriptions,Double charge,Logic fault,Re-contact,Refund step skipped after identity check.
+C-41139,Payments,Partial chargeback,Knowledge gap,Escalated,Quoted last month's policy wording.
+C-41144,Cards,PIN reminder,Success,Resolved,Showed the PIN securely in the app.

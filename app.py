@@ -45,12 +45,16 @@ def password_ok():
         )
         with st.form("login"):
             entered = st.text_input("Password", type="password", placeholder="Enter the password you were given")
+            agreed = st.checkbox("I understand this is a demo built on illustrative sample data and I will not reproduce its content.")
             submitted = st.form_submit_button("Log in", type="primary")
         if submitted:
-            if entered and hmac.compare_digest(entered, expected):
+            if not agreed:
+                st.warning("Please tick the acknowledgement to continue.")
+            elif entered and hmac.compare_digest(entered, expected):
                 st.session_state["auth_ok"] = True
                 st.rerun()
-            st.error("That password is not correct. Please try again.")
+            else:
+                st.error("That password is not correct. Please try again.")
     return False
 
 

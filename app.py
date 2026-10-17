@@ -79,10 +79,34 @@ def stretch(fn, *args, **kwargs):
 
 def choose_one(label, options, default):
     """Segmented buttons where available, horizontal radio buttons otherwise."""
+    if st.session_state.get("market") not in options:
+        st.session_state["market"] = default
     if hasattr(st, "segmented_control"):
-        pick = st.segmented_control(label, options, default=default, key="market")
+        pick = st.segmented_control(label, options, key="market")
         return pick or default
-    return st.radio(label, options, index=options.index(default), horizontal=True, key="market")
+    return st.radio(label, options, horizontal=True, key="market")
+
+
+def switch_market(chart_key, traces):
+    """Chart click callback: make the clicked line or country the selected market."""
+    state = st.session_state.get(chart_key)
+    try:
+        points = state["selection"]["points"]
+    except (KeyError, TypeError):
+        return
+    by_iso = {v: k for k, v in ISO3.items()}
+    for p in points:
+        mk = by_iso.get(p.get("location"))
+        n = p.get("curve_number")
+        if mk is None and n is not None and n < len(traces):
+            mk = traces[n]
+        if mk is None and n == len(traces):
+            i = p.get("point_index", p.get("point_number"))
+            if i is not None and i < len(traces):
+                mk = traces[i]
+        if mk in traces:
+            st.session_state["market"] = mk
+            return
 
 
 def choose_many(label, options, key):
@@ -233,14 +257,15 @@ with c1:
         hot = mk == market
         tf.add_trace(go.Scatter(
             x=[f"W{w}" for w in s["week"]], y=s["automation_rate"], mode="lines+markers", name=mk,
-            line=dict(color=MARKET_COLOR.get(mk, GREY), width=4 if hot else 2), marker=dict(size=8 if hot else 5),
+            line=dict(color=MARKET_COLOR.get(mk, GREY), width=4 if hot else 2), marker=dict(size=9 if hot else 7),
             opacity=1 if hot else 0.7, hovertemplate=f"{mk}: %{{y:.1f}}%<extra></extra>",
         ))
-    tf.update_layout(height=360, margin=dict(l=10, r=10, t=10, b=10), hovermode="x unified",
+    tf.update_layout(height=360, margin=dict(l=10, r=10, t=10, b=10), hovermode="closest",
                      yaxis=dict(ticksuffix="%", gridcolor="rgba(128,128,128,0.15)"),
                      legend=dict(orientation="h", y=-0.15))
-    stretch(st.plotly_chart, tf)
-    st.caption(f"{market} is drawn thicker. Only Poland broke from its trend this week; the other markets held steady.")
+    tkey = f"trend_{market}"
+    stretch(st.plotly_chart, tf, key=tkey, on_select=lambda k=tkey: switch_market(k, markets), selection_mode="points")
+    st.caption("Click a point on any line to switch market. Only Poland broke from its trend this week; the other markets held steady.")
 with c2:
     st.markdown(f"**Week {cur_w} automation rate on the map**")
     latest = weekly[weekly["week"] == cur_w].set_index("market")
@@ -265,8 +290,9 @@ with c2:
                    showcountries=True, countrycolor="rgba(128,128,128,0.5)", showland=True,
                    landcolor="rgba(128,128,128,0.12)", bgcolor="rgba(0,0,0,0)", showframe=False)
     mp.update_layout(height=360, margin=dict(l=0, r=0, t=0, b=0), showlegend=False, paper_bgcolor="rgba(0,0,0,0)")
-    stretch(st.plotly_chart, mp)
-    st.caption("Colours match the line chart; the selected market has a dark outline. Hover a country for its rate.")
+    mkey = f"map_{market}"
+    stretch(st.plotly_chart, mp, key=mkey, on_select=lambda k=mkey: switch_market(k, markets), selection_mode="points")
+    st.caption("Colours match the line chart; the selected market has a dark outline. Click a country to switch market.")
 
 st.markdown(f"**{market} by service line, Week {prev_w} vs Week {cur_w}**")
 t = lines.drop(columns=["market"]).rename(columns={

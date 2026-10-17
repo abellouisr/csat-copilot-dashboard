@@ -38,14 +38,12 @@ def password_ok():
     with mid:
         st.title(APP_NAME)
         st.caption("Weekly support-quality review of an AI support agent, carried out by AI.")
-        st.info(
-            "**Demo notice.** This dashboard is a demo built on illustrative sample data. All markets, figures "
-            "and support conversations are invented and do not describe any real company or customer. "
-            "The content may not be reproduced."
-        )
         with st.form("login"):
             entered = st.text_input("Password", type="password", placeholder="Enter the password you were given")
-            agreed = st.checkbox("I understand this is a demo built on illustrative sample data and I will not reproduce its content.")
+            agreed = st.checkbox(
+                "I understand this dashboard is a demo built on illustrative sample data. All markets, figures and "
+                "support conversations are invented and do not describe any real company or customer. I will not reproduce."
+            )
             submitted = st.form_submit_button("Log in", type="primary")
         if submitted:
             if not agreed:

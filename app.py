@@ -24,6 +24,9 @@ KIND_COLOR = {
 MODE_ICON = {
     "Knowledge gap": "🔴", "Classification error": "🟠", "Logic fault": "🟣", "Success": "🟢",
 }
+MARKET_COLOR = {"Poland": "#2F5BEA", "Estonia": "#E8871E", "Portugal": "#139A9A", "Germany": "#7B4FC9", "Spain": "#A6762B"}
+ISO3 = {"Poland": "POL", "Estonia": "EST", "Portugal": "PRT", "Germany": "DEU", "Spain": "ESP"}
+CENTROID = {"Poland": (52.1, 19.4), "Estonia": (58.7, 25.6), "Portugal": (39.7, -8.0), "Germany": (51.1, 10.4), "Spain": (40.3, -3.7)}
 
 TABLE_CSS = """
 <style>
@@ -45,6 +48,7 @@ TABLE_CSS = """
 .ct-table td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .ct-table tr.ok td { background: rgba(46,158,106,0.08); }
 @media (prefers-color-scheme: dark) { .ct-table th { background: #262730; color: #FAFAFA; } }
+div[data-testid="stTextInput"] div[data-baseweb="input"] { border: 1px solid #B8BEC8 !important; border-radius: 6px; }
 </style>
 """
 
@@ -106,7 +110,6 @@ def scroll_table(columns, rows, height, min_width, row_class=None):
         )
         body.append(f'<tr class="{cls}">{cells}</tr>')
     st.markdown(
-        '<p class="ct-hint">↔ Scroll sideways to see every column · ↕ scroll down for more rows</p>'
         f'<div class="ct-wrap" style="max-height:{height}px">'
         f'<table class="ct-table" style="min-width:{min_width}px"><thead><tr>{head}</tr></thead>'
         f'<tbody>{"".join(body)}</tbody></table></div>',
@@ -228,30 +231,56 @@ with c1:
         s = weekly[weekly["market"] == mk].sort_values("week")
         hot = mk == market
         tf.add_trace(go.Scatter(
-            x=[f"W{w}" for w in s["week"]], y=s["automation_rate"], mode="lines+markers" if hot else "lines",
-            name=mk, line=dict(color=BLUE if hot else GREY, width=3 if hot else 1.5),
-            hovertemplate=f"{mk}: %{{y:.1f}}%<extra></extra>",
+            x=[f"W{w}" for w in s["week"]], y=s["automation_rate"], mode="lines+markers", name=mk,
+            line=dict(color=MARKET_COLOR.get(mk, GREY), width=4 if hot else 2), marker=dict(size=8 if hot else 5),
+            opacity=1 if hot else 0.7, hovertemplate=f"{mk}: %{{y:.1f}}%<extra></extra>",
         ))
-    tf.update_layout(height=320, margin=dict(l=10, r=10, t=10, b=10), hovermode="x unified",
+    tf.update_layout(height=360, margin=dict(l=10, r=10, t=10, b=10), hovermode="x unified",
                      yaxis=dict(ticksuffix="%", gridcolor="rgba(128,128,128,0.15)"),
-                     legend=dict(orientation="h", y=-0.2))
+                     legend=dict(orientation="h", y=-0.15))
     stretch(st.plotly_chart, tf)
-    st.caption("Only Poland broke from its trend this week; the other markets held steady.")
+    st.caption(f"{market} is drawn thicker. Only Poland broke from its trend this week; the other markets held steady.")
 with c2:
-    st.markdown(f"**{market} by service line, Week {prev_w} vs Week {cur_w}**")
-    t = lines.drop(columns=["market"]).rename(columns={
-        "vertical": "Service line", "share_w40": "Share wk 40 (%)", "share_w41": "Share wk 41 (%)",
-        "rate_w40": "Rate wk 40 (%)", "rate_w41": "Rate wk 41 (%)", "change_pts": "Change (pts)",
-    })
-    stretch(st.dataframe,
-        t.style.format({"Rate wk 40 (%)": "{:.1f}", "Rate wk 41 (%)": "{:.1f}", "Change (pts)": "{:+.1f}"})
-        .map(lambda v: f"color: {RED if v < 0 else GREEN}; font-weight: 600", subset=["Change (pts)"]),
-        hide_index=True,
-    )
-    worst = lines.sort_values("change_pts").iloc[0]
-    best = lines.sort_values("change_pts").iloc[-1]
-    st.caption(f"Biggest fall: {worst['vertical']} ({signed(worst['change_pts'])} pts). "
-               f"Biggest gain: {best['vertical']} ({signed(best['change_pts'])} pts).")
+    st.markdown(f"**Week {cur_w} automation rate on the map**")
+    latest = weekly[weekly["week"] == cur_w].set_index("market")
+    before = weekly[weekly["week"] == prev_w].set_index("market")
+    mp = go.Figure()
+    for mk in markets:
+        hot = mk == market
+        rate = latest.loc[mk, "automation_rate"]
+        chg = rate - before.loc[mk, "automation_rate"]
+        colour = MARKET_COLOR.get(mk, GREY)
+        mp.add_trace(go.Choropleth(
+            locations=[ISO3[mk]], z=[1], colorscale=[[0, colour], [1, colour]], showscale=False,
+            marker_line_color="#31333F" if hot else "white", marker_line_width=3 if hot else 0.8, name=mk,
+            hovertemplate=f"<b>{mk}</b><br>Week {cur_w}: {rate:.1f}% ({signed(chg)} pts)<extra></extra>",
+        ))
+    mp.add_trace(go.Scattergeo(
+        lat=[CENTROID[mk][0] for mk in markets], lon=[CENTROID[mk][1] for mk in markets],
+        text=[f"{mk} {latest.loc[mk, 'automation_rate']:.1f}%" for mk in markets], mode="text",
+        textfont=dict(size=12, color="#1F2430"), hoverinfo="skip", showlegend=False,
+    ))
+    mp.update_geos(scope="europe", projection_type="mercator", lonaxis_range=[-12, 30], lataxis_range=[35, 61],
+                   showcountries=True, countrycolor="rgba(128,128,128,0.5)", showland=True,
+                   landcolor="rgba(128,128,128,0.12)", bgcolor="rgba(0,0,0,0)", showframe=False)
+    mp.update_layout(height=360, margin=dict(l=0, r=0, t=0, b=0), showlegend=False, paper_bgcolor="rgba(0,0,0,0)")
+    stretch(st.plotly_chart, mp)
+    st.caption("Colours match the line chart; the selected market has a dark outline. Hover a country for its rate.")
+
+st.markdown(f"**{market} by service line, Week {prev_w} vs Week {cur_w}**")
+t = lines.drop(columns=["market"]).rename(columns={
+    "vertical": "Service line", "share_w40": "Share wk 40 (%)", "share_w41": "Share wk 41 (%)",
+    "rate_w40": "Rate wk 40 (%)", "rate_w41": "Rate wk 41 (%)", "change_pts": "Change (pts)",
+})
+stretch(st.dataframe,
+    t.style.format({"Rate wk 40 (%)": "{:.1f}", "Rate wk 41 (%)": "{:.1f}", "Change (pts)": "{:+.1f}"})
+    .map(lambda v: f"color: {RED if v < 0 else GREEN}; font-weight: 600", subset=["Change (pts)"]),
+    hide_index=True,
+)
+worst = lines.sort_values("change_pts").iloc[0]
+best = lines.sort_values("change_pts").iloc[-1]
+st.caption(f"Biggest fall: {worst['vertical']} ({signed(worst['change_pts'])} pts). "
+           f"Biggest gain: {best['vertical']} ({signed(best['change_pts'])} pts).")
 
 # ---------- Findings ----------
 st.subheader("What AI found, and who fixes it")
@@ -285,8 +314,14 @@ scroll_table(
 st.subheader("Sample of support conversations reviewed by AI")
 st.caption("The evidence behind each finding. Filter by the AI's label or search any word.")
 modes = list(convs["failure_mode"].unique())
-pick = choose_many("Filter by AI label", modes, key=f"labels_{market}")
-q = st.text_input("Search conversations", placeholder="e.g. refund, card, limit", key=f"search_{market}")
+try:
+    fc1, fc2 = st.columns([3, 2], vertical_alignment="bottom")
+except TypeError:
+    fc1, fc2 = st.columns([3, 2])
+with fc1:
+    pick = choose_many("Filter by AI label", modes, key=f"labels_{market}")
+with fc2:
+    q = st.text_input("Search conversations", placeholder="e.g. refund, card, limit", key=f"search_{market}")
 cv = convs[convs["failure_mode"].isin(pick)]
 if q:
     mask = cv.apply(lambda r: q.lower() in " ".join(map(str, r.values)).lower(), axis=1)

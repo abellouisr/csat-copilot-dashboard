@@ -1,4 +1,4 @@
-# CSAT Copilot
+# CSAT Bridge - Copilot
 
 A Streamlit demo of a weekly quality review for a customer-support AI agent.
 

@@ -1,4 +1,4 @@
-"""CSAT Copilot: weekly support-quality review of an AI support agent, carried out by AI.
+"""CSAT Bridge - Copilot: weekly support-quality review of an AI support agent, carried out by AI.
 
 Illustrative demo built by Abel Louis. All markets, conversations and figures are
 invented sample data; no real company or customer data is used.
@@ -13,25 +13,44 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-st.set_page_config(page_title="CSAT Copilot", page_icon="📊", layout="wide", initial_sidebar_state="collapsed")
+APP_NAME = "CSAT Bridge - Copilot"
+st.set_page_config(page_title=APP_NAME, page_icon="📊", layout="wide", initial_sidebar_state="collapsed")
+
+
+LOGIN_CSS = """
+<style>
+div[data-testid="stTextInput"] div[data-baseweb="input"] { border: 1.5px solid #8A94A3 !important; border-radius: 6px; }
+div[data-testid="stTextInput"] div[data-baseweb="input"]:focus-within { border-color: #2F5BEA !important; box-shadow: 0 0 0 3px rgba(47,91,234,0.18); }
+</style>
+"""
 
 
 def password_ok():
-    """Simple password screen. The password lives in Streamlit's Secrets as APP_PASSWORD, never in this repo."""
+    """Password screen. The password lives in Streamlit's Secrets as APP_PASSWORD, never in this repo."""
     try:
         expected = str(st.secrets["APP_PASSWORD"])
     except Exception:
         return True  # no password configured yet: the app stays open
     if st.session_state.get("auth_ok"):
         return True
-    st.title("CSAT Copilot")
-    st.caption("Illustrative demo with sample data. Enter the password you were given to continue.")
-    entered = st.text_input("Password", type="password", key="pw")
-    if entered:
-        if hmac.compare_digest(entered, expected):
-            st.session_state["auth_ok"] = True
-            st.rerun()
-        st.error("That password is not correct. Please try again.")
+    st.markdown(LOGIN_CSS, unsafe_allow_html=True)
+    _, mid, _ = st.columns([1, 2, 1])
+    with mid:
+        st.title(APP_NAME)
+        st.caption("Weekly support-quality review of an AI support agent, carried out by AI.")
+        st.info(
+            "**Demo notice.** This dashboard is a demo built on illustrative sample data. All markets, figures "
+            "and support conversations are invented and do not describe any real company or customer. "
+            "The content may not be reproduced."
+        )
+        with st.form("login"):
+            entered = st.text_input("Password", type="password", placeholder="Enter the password you were given")
+            submitted = st.form_submit_button("Log in", type="primary")
+        if submitted:
+            if entered and hmac.compare_digest(entered, expected):
+                st.session_state["auth_ok"] = True
+                st.rerun()
+            st.error("That password is not correct. Please try again.")
     return False
 
 
@@ -174,7 +193,7 @@ weeks = sorted(weekly["week"].unique())
 cur_w, prev_w = weeks[-1], weeks[-2]
 
 # ---------- Header and market choice ----------
-st.caption("CSAT COPILOT · ILLUSTRATIVE DEMO WITH SAMPLE DATA")
+st.caption(f"{APP_NAME.upper()} · ILLUSTRATIVE DEMO WITH SAMPLE DATA")
 title_slot = st.empty()
 market = choose_one("Choose a market to review", markets, "Poland" if "Poland" in markets else markets[0])
 title_slot.title(f"Support quality, reviewed by AI · {market} · Week {cur_w}")

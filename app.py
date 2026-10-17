@@ -26,6 +26,7 @@ MODE_ICON = {
 }
 MARKET_COLOR = {"Poland": "#2F5BEA", "Estonia": "#E8871E", "Portugal": "#139A9A", "Germany": "#7B4FC9", "Spain": "#A6762B"}
 ISO3 = {"Poland": "POL", "Estonia": "EST", "Portugal": "PRT", "Germany": "DEU", "Spain": "ESP"}
+ISO2 = {"Poland": "PL", "Estonia": "EE", "Portugal": "PT", "Germany": "DE", "Spain": "ES"}
 CENTROID = {"Poland": (52.1, 19.4), "Estonia": (58.7, 25.6), "Portugal": (39.7, -8.0), "Germany": (51.1, 10.4), "Spain": (40.3, -3.7)}
 
 TABLE_CSS = """
@@ -257,7 +258,7 @@ with c2:
         ))
     mp.add_trace(go.Scattergeo(
         lat=[CENTROID[mk][0] for mk in markets], lon=[CENTROID[mk][1] for mk in markets],
-        text=[f"{mk} {latest.loc[mk, 'automation_rate']:.1f}%" for mk in markets], mode="text",
+        text=[f"{ISO2[mk]} {latest.loc[mk, 'automation_rate']:.1f}%" for mk in markets], mode="text",
         textfont=dict(size=12, color="#1F2430"), hoverinfo="skip", showlegend=False,
     ))
     mp.update_geos(scope="europe", projection_type="mercator", lonaxis_range=[-12, 30], lataxis_range=[35, 61],

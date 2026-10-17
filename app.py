@@ -265,7 +265,7 @@ with c1:
                      legend=dict(orientation="h", y=-0.15))
     tkey = f"trend_{market}"
     stretch(st.plotly_chart, tf, key=tkey, on_select=lambda k=tkey: switch_market(k, markets), selection_mode="points")
-    st.caption("Click a point on any line to switch market. Only Poland broke from its trend this week; the other markets held steady.")
+    st.caption("Only Poland broke from its trend this week; the other markets held steady.")
 with c2:
     st.markdown(f"**Week {cur_w} automation rate on the map**")
     latest = weekly[weekly["week"] == cur_w].set_index("market")
@@ -292,7 +292,6 @@ with c2:
     mp.update_layout(height=360, margin=dict(l=0, r=0, t=0, b=0), showlegend=False, paper_bgcolor="rgba(0,0,0,0)")
     mkey = f"map_{market}"
     stretch(st.plotly_chart, mp, key=mkey, on_select=lambda k=mkey: switch_market(k, markets), selection_mode="points")
-    st.caption("Colours match the line chart; the selected market has a dark outline. Click a country to switch market.")
 
 st.markdown(f"**{market} by service line, Week {prev_w} vs Week {cur_w}**")
 t = lines.drop(columns=["market"]).rename(columns={
